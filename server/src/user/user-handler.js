@@ -1,15 +1,33 @@
-import { apiMethodUtils } from '../utils/index.js';
+import { apiMethodUtils, httpStatus } from '../utils/index.js';
 import { userService } from './index.js';
 import bcrypt from 'bcryptjs';
 
 const getAllUserHandler = async (req, res) => {
-  const user = await userService.getAllUser();
-  return apiMethodUtils.apiSuccess({
-    req,
-    res,
-    data: user,
-    message: 'Successfully fetched data'
-  });
+  try {
+    const user = await userService.getAllUser();
+    return apiMethodUtils.apiSuccess({
+      req,
+      res,
+      status: {
+        code: httpStatus.OK,
+        success: true
+      },
+      data: user,
+      message: 'Successfully fetched data'
+    });
+  } catch (err) {
+    console.log(err);
+    return apiMethodUtils.apiFail({
+      req,
+      res,
+      status: {
+        code: httpStatus.BAD_REQUEST,
+        success: false
+      },
+      error: err,
+      message: 'Something went wrong'
+    });
+  }
 };
 
 const createUserHandler = async (req, res) => {
@@ -27,6 +45,10 @@ const createUserHandler = async (req, res) => {
       req,
       res,
       data: user,
+      status: {
+        code: httpStatus.CREATED,
+        success: true
+      },
       message: 'Successfully created user'
     });
   } catch (err) {
@@ -34,6 +56,10 @@ const createUserHandler = async (req, res) => {
     return apiMethodUtils.apiFail({
       req,
       res,
+      status: {
+        code: httpStatus.BAD_REQUEST,
+        success: false
+      },
       error: err,
       message: 'Something went wrong'
     });
@@ -49,6 +75,10 @@ const loginHandler = async (req, res) => {
     return apiMethodUtils.apiSuccess({
       req,
       res,
+      status: {
+        code: httpStatus.OK,
+        success: true
+      },
       data: user,
       message: 'Successfully logged in'
     });
@@ -57,6 +87,10 @@ const loginHandler = async (req, res) => {
     return apiMethodUtils.apiFail({
       req,
       res,
+      status: {
+        code: httpStatus.BAD_REQUEST,
+        success: false
+      },
       error: err,
       message: 'Something went wrong'
     });
